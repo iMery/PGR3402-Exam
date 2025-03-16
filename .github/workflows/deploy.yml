@@ -31,10 +31,8 @@ jobs:
 
       - name: Build and Push Admin Service
         run: |
-          DOCKER_USER=$(echo "${{ secrets.DOCKER_USERNAME }}" | tr -d '[:space:]')
-          echo "Using Docker Username: $DOCKER_USER"
-          docker build -t ${DOCKER_USER}/admin-service:latest ./adminService
-          docker push ${DOCKER_USER}/admin-service:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/admin-service:latest ./adminService
+          docker push ${{ secrets.DOCKER_USERNAME }}/admin-service:latest
 
       - name: Build and Push Auth Service
         run: |
