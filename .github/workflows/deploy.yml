@@ -53,3 +53,7 @@ jobs:
       - name: Deploy with Docker Compose
         run: |
           docker-compose -f docker-compose.yml up -d --remove-orphans
+      
+      - name: Debug Secrets
+        run: |
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}"
