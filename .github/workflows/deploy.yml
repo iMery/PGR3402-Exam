@@ -73,5 +73,5 @@ jobs:
         run: |
           printf "DOCKER_USERNAME=%s\n" "$DOCKER_USERNAME" > .env
           printf "DOCKER_PASSWORD=%s\n" "$DOCKER_PASSWORD" >> .env
-          cat .env  # Debugging step to verify the .env file content
+          cat .env  
           docker compose -f docker-compose.yml up -d --remove-orphans
