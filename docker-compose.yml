@@ -1,57 +1,42 @@
-name: Deploy Library Management System
+version: "3.8"
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+services:
+  auth-service:
+    image: "${DOCKER_USERNAME}/auth-service:latest"
+    ports:
+      - "5003:5003"
+    networks:
+      - app-network
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+  user-service:
+    image: "${DOCKER_USERNAME}/user-service:latest"
+    ports:
+      - "5004:5004"
+    networks:
+      - app-network
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+  book-service:
+    image: "${DOCKER_USERNAME}/book-service:latest"
+    ports:
+      - "5002:5002"
+    networks:
+      - app-network
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+  admin-service:
+    image: "${DOCKER_USERNAME}/admin-service:latest"
+    ports:
+      - "5001:5001"
+    networks:
+      - app-network
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+  frontend:
+    image: "${DOCKER_USERNAME}/frontend:latest"
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
 
-      - name: Set Environment Variables
-        run: |
-          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
-          echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}" >> $GITHUB_ENV
-
-      - name: Debug Environment Variables
-        run: |
-          echo "DOCKER_USERNAME=${DOCKER_USERNAME}"
-          echo "DOCKER_PASSWORD=${DOCKER_PASSWORD}"
-
-      - name: Build and Push Services
-        run: |
-          docker build -t ${DOCKER_USERNAME}/admin-service:latest ./adminService
-          docker push ${DOCKER_USERNAME}/admin-service:latest
-
-          docker build -t ${DOCKER_USERNAME}/auth-service:latest ./authService
-          docker push ${DOCKER_USERNAME}/auth-service:latest
-
-          docker build -t ${DOCKER_USERNAME}/user-service:latest ./userService
-          docker push ${DOCKER_USERNAME}/user-service:latest
-
-          docker build -t ${DOCKER_USERNAME}/book-service:latest ./bookService
-          docker push ${DOCKER_USERNAME}/book-service:latest
-
-          docker build -t ${DOCKER_USERNAME}/frontend:latest ./frontend
-          docker push ${DOCKER_USERNAME}/frontend:latest
-
-      - name: Deploy with Docker Compose
-        run: |
-          docker-compose -f docker-compose.yml up -d --remove-orphans
+networks:
+  app-network:
+    driver: bridge
