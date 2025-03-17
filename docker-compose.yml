@@ -1,39 +1,85 @@
-version: "3.8"
-
 services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "5005:80"  
+    volumes:
+      - ./apiGateway/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - auth-service
+      - user-service
+      - book-service
+      - admin-service
+      - frontend  
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 5 
+      start_period: 30s
+
   auth-service:
-    image: "${DOCKER_USERNAME}/auth-service:latest"
+    build: ./authService
     ports:
       - "5003:5003"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   user-service:
-    image: "${DOCKER_USERNAME}/user-service:latest"
+    build: ./userService
     ports:
       - "5004:5004"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   book-service:
-    image: "${DOCKER_USERNAME}/book-service:latest"
+    build: ./bookService
     ports:
       - "5002:5002"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   admin-service:
-    image: "${DOCKER_USERNAME}/admin-service:latest"
+    build: ./adminService
     ports:
       - "5001:5001"
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   frontend:
-    image: "${DOCKER_USERNAME}/frontend:latest"
+    build: ./frontend  
     container_name: frontend
     ports:
-      - "3000:3000"
+      - "3000:3000"  
+    stdin_open: true  
+    tty: true 
+    volumes:
+      - ./frontend:/app  
+      - /app/node_modules  
     networks:
       - app-network
 
