@@ -68,7 +68,10 @@ jobs:
 
       - name: Deploy with Docker Compose
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
-          echo "DOCKER_USERNAME=${DOCKER_USERNAME}" > .env
+          printf "DOCKER_USERNAME=%s\n" "$DOCKER_USERNAME" > .env
+          printf "DOCKER_PASSWORD=%s\n" "$DOCKER_PASSWORD" >> .env
+          cat .env  # Debugging step to verify the .env file content
           docker compose -f docker-compose.yml up -d --remove-orphans
