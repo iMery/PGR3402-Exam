@@ -63,9 +63,10 @@ jobs:
           docker-compose --version
 
       - name: Deploy with Docker Compose
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
+          echo "DOCKER_USERNAME=$DOCKER_USERNAME" > .env
           docker compose -f docker-compose.yml up -d --remove-orphans
-
       
       
