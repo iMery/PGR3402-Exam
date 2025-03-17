@@ -26,9 +26,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Debug DOCKER_USERNAME
-  run: |
-    DOCKER_USER=$(echo "${{ secrets.DOCKER_USERNAME }}" | tr -d '[:space:]')
-    echo "DOCKER_USERNAME='$DOCKER_USER'"
+        run: |
+          DOCKER_USER=$(echo "${{ secrets.DOCKER_USERNAME }}" | tr -d '[:space:]')
+          echo "DOCKER_USERNAME='$DOCKER_USER'"
 
 
       - name: Build and Push Admin Service
