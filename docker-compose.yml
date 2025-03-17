@@ -25,32 +25,33 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and Push Admin Service
+      - name: Set Environment Variables
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/admin-service:latest ./adminService
-          docker push ${{ secrets.DOCKER_USERNAME }}/admin-service:latest
+          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
+          echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}" >> $GITHUB_ENV
 
-      - name: Build and Push Auth Service
+      - name: Debug Environment Variables
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/auth-service:latest ./authService
-          docker push ${{ secrets.DOCKER_USERNAME }}/auth-service:latest
+          echo "DOCKER_USERNAME=${DOCKER_USERNAME}"
+          echo "DOCKER_PASSWORD=${DOCKER_PASSWORD}"
 
-      - name: Build and Push User Service
+      - name: Build and Push Services
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/user-service:latest ./userService
-          docker push ${{ secrets.DOCKER_USERNAME }}/user-service:latest
+          docker build -t ${DOCKER_USERNAME}/admin-service:latest ./adminService
+          docker push ${DOCKER_USERNAME}/admin-service:latest
 
-      - name: Build and Push Book Service
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/book-service:latest ./bookService
-          docker push ${{ secrets.DOCKER_USERNAME }}/book-service:latest
+          docker build -t ${DOCKER_USERNAME}/auth-service:latest ./authService
+          docker push ${DOCKER_USERNAME}/auth-service:latest
 
-      - name: Build and Push Frontend Service
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend:latest ./frontend
-          docker push ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+          docker build -t ${DOCKER_USERNAME}/user-service:latest ./userService
+          docker push ${DOCKER_USERNAME}/user-service:latest
+
+          docker build -t ${DOCKER_USERNAME}/book-service:latest ./bookService
+          docker push ${DOCKER_USERNAME}/book-service:latest
+
+          docker build -t ${DOCKER_USERNAME}/frontend:latest ./frontend
+          docker push ${DOCKER_USERNAME}/frontend:latest
 
       - name: Deploy with Docker Compose
         run: |
-          echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" > .env
           docker-compose -f docker-compose.yml up -d --remove-orphans
